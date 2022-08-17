@@ -10,11 +10,13 @@ var randomNumber = function(min, max) {
 // console.log(enemyNames[0]);
 // console.log(enemyNames[3]);
 
-// fight function (now with parameter for enemy's name)
-var fight = function(enemy) {
-  while (playerInfo.health > 0 && enemy.health > 0) {
-    // ask player if they'd like to fight or run
+var fightOrSkip = function() {
     var promptFight = window.prompt('Would you like to FIGHT or SKIP this battle? Enter "FIGHT" or "SKIP" to choose.');
+
+    if (!promptFight) {
+        window.alert("You need to provide a valid answer. Please try again.");
+        return fightOrSkip();
+    }
 
     // if player picks "skip" confirm and then stop the loop
     if (promptFight === "skip" || promptFight === "SKIP") {
@@ -26,8 +28,22 @@ var fight = function(enemy) {
         window.alert(playerInfo.name + ' has decided to skip this fight. Goodbye!');
         // subtract money from playerInfo.money for skipping
         playerInfo.money = Math.max(0, playerInfo.money - 10);
-        console.log("playerInfo.money", playerInfo.money);
-        break;
+        //return true if player wants to leave
+        return true;
+        shop();
+        }
+    }
+    return false;
+}
+
+// fight function (now with parameter for enemy's name)
+var fight = function(enemy) {
+  while (playerInfo.health > 0 && enemy.health > 0) {
+        // ask player if they'd like to fight or skip using fightOrSkip function
+        if (fightOrSkip());
+            //if true, leave fight by breaking loop
+            break;
+        var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
       }
     }
 
@@ -45,8 +61,6 @@ var fight = function(enemy) {
       // award player money for winning
       playerInfo.money = playerInfo.money + 20;
 
-      // leave while() loop since enemy is dead
-      break;
     } else {
       window.alert(enemy.name + ' still has ' + enemy.health + ' health left.');
     }
@@ -61,13 +75,9 @@ var fight = function(enemy) {
     // check player's health
     if (playerInfo.health <= 0) {
       window.alert(playerInfo.name + ' has died!');
-      // leave while() loop if player is dead
-      break;
     } else {
       window.alert(playerInfo.name + ' still has ' + playerInfo.health + ' health left.');
-    }
-  } // end of while loop
-}; // end of fight function
+    }; // end of fight function
 
 // function to set name
 var getPlayerName = function() {
